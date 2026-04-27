@@ -9,15 +9,6 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
-  experimental: {
-    optimizePackageImports: [
-      "@react-three/fiber",
-      "@react-three/drei",
-      "@react-three/postprocessing",
-      "framer-motion",
-    ],
-  },
-
   // Silence "Critical dependency: the request of a dependency is an expression"
   // warnings from three.js internals
   webpack(config) {
