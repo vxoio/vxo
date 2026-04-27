@@ -1,0 +1,250 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Custom Properties ─────────────────────────────────────────── */
+:root {
+  --vxo-green:      #00ff41;
+  --vxo-cyan:       #00d4ff;
+  --vxo-amber:      #ffb000;
+  --vxo-red:        #ff003c;
+  --vxo-bg:         #0d1117;
+  --vxo-void:       #070b0f;
+  --vxo-surface:    #111827;
+
+  --font-jetbrains: "JetBrains Mono", monospace;
+  --font-inter:     "Inter", sans-serif;
+}
+
+/* ── Base Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--vxo-void);
+  color: #94a3b8;
+  font-family: var(--font-inter);
+  overflow-x: hidden;
+  min-height: 100dvh;
+}
+
+/* Kill default focus ring; we handle our own */
+*:focus { outline: none; }
+*:focus-visible {
+  outline: 1px solid var(--vxo-green);
+  outline-offset: 2px;
+}
+
+/* ── Custom Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--vxo-void); }
+::-webkit-scrollbar-thumb {
+  background: #00ff4133;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover { background: #00ff4166; }
+
+/* ── Text Selection ─────────────────────────────────────────────── */
+::selection {
+  background: rgba(0, 255, 65, 0.2);
+  color: #00ff41;
+}
+
+/* ── Global Noise Overlay ───────────────────────────────────────── */
+.vxo-noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  animation: noise-shift 0.5s steps(3) infinite;
+}
+
+@keyframes noise-shift {
+  0%   { background-position: 0 0;       }
+  33%  { background-position: -50px 20px;}
+  66%  { background-position: 30px -10px;}
+  100% { background-position: 0 0;       }
+}
+
+/* ── Scanline Overlay ───────────────────────────────────────────── */
+.vxo-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+}
+
+/* ── CRT Flicker ────────────────────────────────────────────────── */
+.crt-flicker {
+  animation: crt-flicker 8s ease-in-out infinite;
+}
+
+@keyframes crt-flicker {
+  0%, 95%, 100% { filter: brightness(1);    }
+  96%           { filter: brightness(0.95); }
+  97%           { filter: brightness(1.02); }
+  98%           { filter: brightness(0.93); }
+  99%           { filter: brightness(1);    }
+}
+
+/* ── Typewriter ─────────────────────────────────────────────────── */
+.typewriter-cursor::after {
+  content: "█";
+  color: var(--vxo-green);
+  animation: cursor-blink 1s step-end infinite;
+  margin-left: 1px;
+  font-size: 0.85em;
+  vertical-align: baseline;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+/* ── HUD Corners ─────────────────────────────────────────────────── */
+.hud-corners {
+  position: relative;
+}
+
+.hud-corners::before,
+.hud-corners::after,
+.hud-corners .corner-br,
+.hud-corners .corner-tl {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--vxo-green);
+  border-style: solid;
+  opacity: 0.7;
+  transition: opacity 0.3s, width 0.3s, height 0.3s;
+}
+
+.hud-corners:hover::before,
+.hud-corners:hover::after,
+.hud-corners:hover .corner-br,
+.hud-corners:hover .corner-tl {
+  opacity: 1;
+  width: 16px;
+  height: 16px;
+}
+
+.hud-corners::before {
+  top: 0; left: 0;
+  border-width: 1px 0 0 1px;
+}
+.hud-corners::after {
+  top: 0; right: 0;
+  border-width: 1px 1px 0 0;
+}
+.hud-corners .corner-br {
+  bottom: 0; right: 0;
+  border-width: 0 1px 1px 0;
+}
+.hud-corners .corner-tl {
+  bottom: 0; left: 0;
+  border-width: 0 0 1px 1px;
+}
+
+/* ── Progress Bar ─────────────────────────────────────────────────── */
+.progress-bar-fill {
+  background: linear-gradient(90deg, var(--vxo-green), var(--vxo-cyan));
+  box-shadow: 0 0 8px var(--vxo-green), 0 0 16px rgba(0, 255, 65, 0.4);
+  transition: width 0.05s linear;
+}
+
+/* ── Glitch Text Effect ───────────────────────────────────────────── */
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.glitch::before {
+  color: var(--vxo-cyan);
+  animation: glitch-shift-1 3s infinite linear;
+  clip-path: inset(0 0 50% 0);
+}
+
+.glitch::after {
+  color: var(--vxo-red);
+  animation: glitch-shift-2 3s infinite linear;
+  clip-path: inset(50% 0 0 0);
+}
+
+@keyframes glitch-shift-1 {
+  0%, 90%, 100% { transform: translate(0); opacity: 0; }
+  91%           { transform: translate(-2px, 1px); opacity: 0.8; }
+  93%           { transform: translate(2px, -1px); opacity: 0.8; }
+  95%           { transform: translate(-1px); opacity: 0; }
+}
+
+@keyframes glitch-shift-2 {
+  0%, 90%, 100% { transform: translate(0); opacity: 0; }
+  92%           { transform: translate(2px, -1px); opacity: 0.7; }
+  94%           { transform: translate(-2px); opacity: 0.7; }
+  96%           { transform: translate(0); opacity: 0; }
+}
+
+/* ── Section Reveal ───────────────────────────────────────────────── */
+.section-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.section-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Command Palette ─────────────────────────────────────────────── */
+.cmd-overlay {
+  backdrop-filter: blur(20px) saturate(0.8);
+  -webkit-backdrop-filter: blur(20px) saturate(0.8);
+}
+
+/* ── Matrix Rain Canvas ──────────────────────────────────────────── */
+#matrix-canvas {
+  font-family: var(--font-jetbrains);
+}
+
+/* ── Status Indicator Pulse ──────────────────────────────────────── */
+.status-pulse {
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+  0%, 100% { box-shadow: 0 0 4px var(--vxo-green); opacity: 1; }
+  50%       { box-shadow: 0 0 10px var(--vxo-green); opacity: 0.6; }
+}
+
+/* ── Mobile Overrides ────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .vxo-scanlines { opacity: 0.5; }
+  .vxo-noise-overlay { opacity: 0.015; }
+}
