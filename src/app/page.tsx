@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef } from "react"
 import dynamic from "next/dynamic"
-import { AnimatePresence, motion } from "motion/react"
 import VXO_Terminal from "@/components/VXO_Terminal"
 import HUDGrid      from "@/components/HUD/SectorPanel"
 import CommandPalette from "@/components/CommandPalette"
@@ -26,16 +25,14 @@ function HUDHeader() {
   const ts  = now.toISOString().replace("T", " ").slice(0, 19) + " UTC"
 
   return (
-    <motion.header
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+    <header
       className="
         fixed top-0 inset-x-0 z-30
         flex items-center justify-between
         px-6 py-2
         border-b border-vxo-green/10
         bg-vxo-void/80 backdrop-blur-md
+        animate-hud-in [animation-delay:100ms]
       "
     >
       {/* Left — wordmark */}
@@ -59,17 +56,14 @@ function HUDHeader() {
           <span className="font-mono text-2xs text-vxo-green/70">ONLINE</span>
         </div>
       </div>
-    </motion.header>
+    </header>
   )
 }
 
 /* ── Hero copy ────────────────────────────────────────────────────── */
 function HeroSection() {
   return (
-    <motion.section
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, delay: 0.3 }}
+    <section
       className="
         relative z-10 w-full max-w-6xl mx-auto
         px-4 pt-32 pb-4
@@ -77,12 +71,7 @@ function HeroSection() {
       "
     >
       {/* Tag */}
-      <motion.div
-        initial={{ opacity: 0, x: -12 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="flex items-center gap-3 mb-6"
-      >
+      <div className="flex items-center gap-3 mb-6 animate-hud-in [animation-delay:400ms]">
         <span className="font-mono text-2xs text-vxo-green/50 tracking-[0.3em] uppercase">
           /VXO/INIT
         </span>
@@ -90,41 +79,29 @@ function HeroSection() {
         <span className="font-mono text-2xs text-slate-700">
           BUILD 2025.1
         </span>
-      </motion.div>
+      </div>
 
       {/* Headline */}
-      <motion.h1
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.65, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="font-mono font-bold leading-none mb-4"
-      >
+      <h1 className="font-mono font-bold leading-none mb-4 animate-hud-in [animation-delay:500ms]">
         <span className="block text-4xl sm:text-6xl lg:text-7xl text-vxo-white">
           INFRASTRUCTURE
         </span>
         <span className="block text-4xl sm:text-6xl lg:text-7xl text-vxo-green text-glow-green">
           AT MACHINE SPEED.
         </span>
-      </motion.h1>
+      </h1>
 
       {/* Sub */}
-      <motion.p
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, delay: 0.65 }}
-        className="font-sans text-base text-slate-400 max-w-xl mb-8"
-      >
+      <p className="
+        font-sans text-base text-slate-400 max-w-xl mb-8
+        animate-hud-in [animation-delay:650ms]
+      ">
         Cloud-native automation, AI orchestration, and adversarial intelligence
         — engineered for zero-downtime at global scale.
-      </motion.p>
+      </p>
 
       {/* CTA row */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.8 }}
-        className="flex items-center gap-4 flex-wrap"
-      >
+      <div className="flex items-center gap-4 flex-wrap animate-hud-in [animation-delay:800ms]">
         <button className="
           font-mono text-xs px-5 py-2.5
           border border-vxo-green/50
@@ -139,24 +116,22 @@ function HeroSection() {
         <span className="font-mono text-2xs text-slate-600">
           or press <kbd className="text-vxo-green">⌘K</kbd> to access terminal
         </span>
-      </motion.div>
-    </motion.section>
+      </div>
+    </section>
   )
 }
 
 /* ── Footer bar ───────────────────────────────────────────────────── */
 function HUDFooter() {
   return (
-    <motion.footer
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, delay: 1.2 }}
+    <footer
       className="
         relative z-10 w-full
         border-t border-vxo-green/10
         px-6 py-3
         flex items-center justify-between
         bg-vxo-void/60 backdrop-blur-sm
+        animate-hud-in [animation-delay:1200ms]
       "
     >
       <span className="font-mono text-2xs text-slate-700">
@@ -171,7 +146,7 @@ function HUDFooter() {
           ● SECURE
         </span>
       </div>
-    </motion.footer>
+    </footer>
   )
 }
 
@@ -204,11 +179,9 @@ export default function Page() {
     <main className="relative min-h-screen bg-vxo-void overflow-x-hidden">
 
       {/* ── Phase: Terminal boot ───────────────────────────────────── */}
-      <AnimatePresence>
-        {phase === "terminal" && (
-          <VXO_Terminal onComplete={handleTerminalDone} />
-        )}
-      </AnimatePresence>
+      {phase === "terminal" && (
+        <VXO_Terminal onComplete={handleTerminalDone} />
+      )}
 
       {/* ── Phase: HUD ────────────────────────────────────────────── */}
       {phase === "hud" && (
@@ -247,11 +220,9 @@ export default function Page() {
           />
 
           {/* ── Matrix Rain overlay ──────────────────────────────────── */}
-          <AnimatePresence>
-            {matrixOn && (
-              <MatrixRain onDismiss={handleMatrixDismiss} />
-            )}
-          </AnimatePresence>
+          {matrixOn && (
+            <MatrixRain onDismiss={handleMatrixDismiss} />
+          )}
         </>
       )}
     </main>

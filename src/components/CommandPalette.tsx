@@ -4,7 +4,6 @@ import {
   useEffect, useRef, useState, useCallback,
   KeyboardEvent, ChangeEvent,
 } from "react"
-import { motion, AnimatePresence } from "motion/react"
 import { gsap } from "gsap"
 
 /* ── Command Registry ───────────────────────────────────────────── */
@@ -139,9 +138,11 @@ export default function CommandPalette({
   const [value,   setValue]   = useState("")
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [hIdx,    setHIdx]    = useState(-1)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const bodyRef  = useRef<HTMLDivElement>(null)
-  const idRef    = useRef(0)
+  const inputRef   = useRef<HTMLInputElement>(null)
+  const bodyRef    = useRef<HTMLDivElement>(null)
+  const backdropRef = useRef<HTMLDivElement>(null)
+  const panelRef   = useRef<HTMLDivElement>(null)
+  const idRef      = useRef(0)
 
   // ── Toggle open ─────────────────────────────────────────────────
   const close = useCallback(() => {
@@ -164,6 +165,24 @@ export default function CommandPalette({
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50)
+  }, [open])
+
+  // Animate panel in/out with GSAP
+  useEffect(() => {
+    const backdrop = backdropRef.current
+    const panel    = panelRef.current
+    if (!backdrop || !panel) return
+
+    if (open) {
+      gsap.fromTo(backdrop, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "none" })
+      gsap.fromTo(panel,
+        { opacity: 0, y: -16, scale: 0.97 },
+        { opacity: 1, y: 0,   scale: 1,    duration: 0.2, ease: "power3.out" }
+      )
+    } else {
+      gsap.to(panel,    { opacity: 0, y: -8, scale: 0.98, duration: 0.15, ease: "power3.in" })
+      gsap.to(backdrop, { opacity: 0, duration: 0.15, ease: "none" })
+    }
   }, [open])
 
   // Scroll to bottom on new history
@@ -228,7 +247,6 @@ export default function CommandPalette({
       setValue(next === -1 ? "" : history[history.length - 1 - next]?.input ?? "")
     } else if (e.key === "Tab") {
       e.preventDefault()
-      // Autocomplete
       const partial = value.trim().toLowerCase()
       const match   = Object.keys(COMMANDS).find(k => k.startsWith(partial))
       if (match) setValue(match + " ")
@@ -258,95 +276,87 @@ export default function CommandPalette({
         <span>COMMAND</span>
       </button>
 
-      {/* ── Overlay ──────────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {open && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              className="fixed inset-0 z-50 bg-black/70 cmd-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              onClick={close}
-            />
+      {/* ── Backdrop ─────────────────────────────────────────────────── */}
+      <div
+        ref={backdropRef}
+        className="fixed inset-0 z-50 bg-black/70 cmd-overlay"
+        style={{ opacity: 0, pointerEvents: open ? "auto" : "none" }}
+        onClick={close}
+      />
 
-            {/* Panel */}
-            <motion.div
-              className="
-                fixed z-50
-                top-[15vh] left-1/2
-                w-full max-w-xl
-                -translate-x-1/2
-                border border-vxo-green/25
-                bg-vxo-void/95 backdrop-blur-xl
-                overflow-hidden
-              "
-              style={{ boxShadow: "0 0 60px rgba(0,255,65,0.08), 0 24px 64px rgba(0,0,0,0.9)" }}
-              initial={{ opacity: 0, y: -16, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0,   scale: 1     }}
-              exit={{    opacity: 0, y: -8,   scale: 0.98  }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            >
-              {/* Title bar */}
-              <div className="flex items-center gap-2 px-4 py-2 border-b border-vxo-green/10">
-                <span className="text-vxo-green text-xs font-mono">⬡</span>
-                <span className="font-mono text-2xs text-slate-500 tracking-widest uppercase">
-                  VXO Command Interface
-                </span>
-                <span className="ml-auto font-mono text-2xs text-slate-700">ESC to close</span>
-              </div>
+      {/* ── Panel ────────────────────────────────────────────────────── */}
+      <div
+        ref={panelRef}
+        className="
+          fixed z-50
+          top-[15vh] left-1/2
+          w-full max-w-xl
+          -translate-x-1/2
+          border border-vxo-green/25
+          bg-vxo-void/95 backdrop-blur-xl
+          overflow-hidden
+        "
+        style={{
+          boxShadow: "0 0 60px rgba(0,255,65,0.08), 0 24px 64px rgba(0,0,0,0.9)",
+          opacity: 0,
+          pointerEvents: open ? "auto" : "none",
+        }}
+      >
+        {/* Title bar */}
+        <div className="flex items-center gap-2 px-4 py-2 border-b border-vxo-green/10">
+          <span className="text-vxo-green text-xs font-mono">⬡</span>
+          <span className="font-mono text-2xs text-slate-500 tracking-widest uppercase">
+            VXO Command Interface
+          </span>
+          <span className="ml-auto font-mono text-2xs text-slate-700">ESC to close</span>
+        </div>
 
-              {/* History */}
-              <div
-                ref={bodyRef}
-                className="px-4 py-3 max-h-64 overflow-y-auto space-y-3"
-              >
-                {history.length === 0 && (
-                  <p className="font-mono text-2xs text-slate-700">
-                    Type <span className="text-vxo-green">help</span> to get started.
-                  </p>
-                )}
-                {history.map(item => (
-                  <div key={item.id} className="space-y-0.5">
-                    <p className="font-mono text-xs text-slate-500">
-                      <span className="text-vxo-green/60">$</span> {item.input}
-                    </p>
-                    {item.result.lines.map((l, i) => (
-                      <p key={i} className={`font-mono text-xs leading-5 ${l.color ?? "text-slate-400"}`}>
-                        {l.text}
-                      </p>
-                    ))}
-                  </div>
-                ))}
-              </div>
+        {/* History */}
+        <div
+          ref={bodyRef}
+          className="px-4 py-3 max-h-64 overflow-y-auto space-y-3"
+        >
+          {history.length === 0 && (
+            <p className="font-mono text-2xs text-slate-700">
+              Type <span className="text-vxo-green">help</span> to get started.
+            </p>
+          )}
+          {history.map(item => (
+            <div key={item.id} className="space-y-0.5">
+              <p className="font-mono text-xs text-slate-500">
+                <span className="text-vxo-green/60">$</span> {item.input}
+              </p>
+              {item.result.lines.map((l, i) => (
+                <p key={i} className={`font-mono text-xs leading-5 ${l.color ?? "text-slate-400"}`}>
+                  {l.text}
+                </p>
+              ))}
+            </div>
+          ))}
+        </div>
 
-              {/* Input */}
-              <div className="flex items-center gap-2 px-4 py-3 border-t border-vxo-green/10">
-                <span className="font-mono text-xs text-vxo-green flex-shrink-0">$</span>
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={value}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
-                  onKeyDown={onKeyDown}
-                  placeholder="enter command..."
-                  className="
-                    flex-1 bg-transparent border-none outline-none
-                    font-mono text-xs text-vxo-white
-                    placeholder:text-slate-700
-                    caret-vxo-green
-                  "
-                  spellCheck={false}
-                  autoComplete="off"
-                  autoCorrect="off"
-                />
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+        {/* Input */}
+        <div className="flex items-center gap-2 px-4 py-3 border-t border-vxo-green/10">
+          <span className="font-mono text-xs text-vxo-green flex-shrink-0">$</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
+            onKeyDown={onKeyDown}
+            placeholder="enter command..."
+            className="
+              flex-1 bg-transparent border-none outline-none
+              font-mono text-xs text-vxo-white
+              placeholder:text-slate-700
+              caret-vxo-green
+            "
+            spellCheck={false}
+            autoComplete="off"
+            autoCorrect="off"
+          />
+        </div>
+      </div>
     </>
   )
 }

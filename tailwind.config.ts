@@ -101,6 +101,14 @@ const config: Config = {
           "30%":      { clipPath: "inset(40% 0 40% 0)", transform: "translate(-1px)"    },
           "40%":      { clipPath: "inset(0 0 0 0)",     transform: "translate(0)"       },
         },
+        "hud-in": {
+          "0%":   { opacity: "0", transform: "translateY(12px)" },
+          "100%": { opacity: "1", transform: "translateY(0)"    },
+        },
+        "sector-in": {
+          "0%":   { opacity: "0", transform: "translateY(28px)" },
+          "100%": { opacity: "1", transform: "translateY(0)"    },
+        },
       },
 
       animation: {
@@ -111,6 +119,8 @@ const config: Config = {
         "bracket-in":   "bracket-in 0.3s ease-out forwards",
         "slide-up":     "slide-up 0.4s ease-out forwards",
         "glitch-h":     "glitch-h 0.4s steps(1) forwards",
+        "hud-in":       "hud-in 0.5s cubic-bezier(0.16,1,0.3,1) both",
+        "sector-in":    "sector-in 0.55s cubic-bezier(0.16,1,0.3,1) both",
       },
 
       backdropBlur: {

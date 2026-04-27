@@ -1,7 +1,5 @@
 "use client"
 
-import { useRef } from "react"
-import { motion } from "motion/react"
 import { clsx } from "clsx"
 
 export type SectorId = "0x01" | "0x02" | "0x03" | "0x04"
@@ -68,19 +66,18 @@ function SectorPanel({
   const c = COLOR_MAP[sector.color]
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 28 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.12 * index, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+    <div
       className={clsx(
         "relative group hud-corners cursor-default select-none",
         "border bg-vxo-surface/50 backdrop-blur-sm",
         "transition-all duration-300",
         "p-5",
+        "animate-sector-in",
         c.border,
         c.glow,
         pinged && "ring-1 ring-current animate-pulse-glow",
       )}
+      style={{ animationDelay: `${0.12 * index}s` }}
     >
       {/* HUD corner marks */}
       <div className={clsx("corner-br absolute bottom-0 right-0 w-3 h-3 border-b border-r", c.corner)} />
@@ -131,7 +128,7 @@ function SectorPanel({
           background: "linear-gradient(135deg, rgba(0,255,65,0.02) 0%, transparent 60%)",
         }}
       />
-    </motion.div>
+    </div>
   )
 }
 
