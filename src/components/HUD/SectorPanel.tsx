@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { clsx } from "clsx"
 
 export type SectorId = "0x01" | "0x02" | "0x03" | "0x04"

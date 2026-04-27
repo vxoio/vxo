@@ -4,7 +4,7 @@ import {
   useEffect, useRef, useState, useCallback,
   KeyboardEvent, ChangeEvent,
 } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { gsap } from "gsap"
 
 /* ── Command Registry ───────────────────────────────────────────── */

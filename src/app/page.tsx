@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from "react"
 import dynamic from "next/dynamic"
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion } from "motion/react"
 import VXO_Terminal from "@/components/VXO_Terminal"
 import HUDGrid      from "@/components/HUD/SectorPanel"
 import CommandPalette from "@/components/CommandPalette"
