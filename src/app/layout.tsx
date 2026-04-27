@@ -56,7 +56,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <meta name="color-scheme" content="dark" />
       </head>
       <body className="bg-vxo-void text-vxo-white antialiased overflow-x-hidden">

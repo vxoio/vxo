@@ -128,9 +128,11 @@ interface HistoryItem {
 
 /* ── Command Palette ─────────────────────────────────────────────── */
 export default function CommandPalette({
+  openTrigger,
   onMatrixTrigger,
   onPing,
 }: {
+  openTrigger?:    number
   onMatrixTrigger?: () => void
   onPing?: (target: string) => void
 }) {
@@ -166,6 +168,11 @@ export default function CommandPalette({
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50)
   }, [open])
+
+  // Open when triggered externally (e.g. "Engage Systems" button)
+  useEffect(() => {
+    if (openTrigger && openTrigger > 0) setOpen(true)
+  }, [openTrigger])
 
   // Animate panel in/out with GSAP
   useEffect(() => {
